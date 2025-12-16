@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Canvas Masterpiece Wizard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              bg: '#1e293b',
+              panel: '#0f172a',
+            },
+            yellow: {
+              accent: '#facc15',
+              hover: '#eab308'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 h-screen">
+  <!-- Canvas Area -->
+<div id="canvasContainer">
+
+  <canvas id="canvas" class="absolute inset-0 m-auto bg-white shadow-md"></canvas>
+
+  <!-- Toolbar fixa no topo à direita -->
+  <div id="toolBar">
+    <button id="zoomInBtn" class="toolBtn"><i data-feather="plus"></i></button>
+    <button id="zoomOutBtn" class="toolBtn"><i data-feather="minus"></i></button>
+    <button id="resetZoomBtn" class="toolBtn"><i data-feather="maximize"></i></button>
+  </div>
+
+</div>
+
+
+    <!-- SVG Selection Info -->
+    <div id="selectionInfo" class="absolute bottom-4 left-4 p-2 rounded-md shadow-md hidden bg-dark-panel border border-yellow-accent">
+     
+    </div>
+  </div>
+
+  <!-- SVG Panel -->
+<div class="sidebar-panel">
+
+
+    <!-- SVG List -->
+    <div class="mb-4 flex-1 overflow-y-auto">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="font-semibold text-yellow-accent">INFO-HARDWARE</h2>
+      
+      </div>
+      <ul id="svgList" class="space-y-2">
+        <!-- SVG items will be added here -->
+      </ul>
+    </div>
+
+ 
+
+    <!-- Controls -->
+    <div class="space-y-2">
+     
+      
+    
+   
+    <input type="file" id="jsonInput" accept=".json" class="hidden">
+  </div>
+<!-- SVG Item Template -->
+  <template id="svgItemTemplate">
+    <li class="svg-item p-2 border rounded-md hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+      <span class="svg-name truncate flex-1"></span>
+      
+    </li>
+  </template>
+ 
+
+  <script src="script.js"></script>
+  <script>
+    feather.replace();
+  </script>
+
+</body>
+</html>

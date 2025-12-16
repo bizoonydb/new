@@ -1,0 +1,218 @@
+
+/* Dark theme with yellow accents */
+:root {
+  --dark-bg: #1e293b;
+  --dark-panel: #0f172a;
+  --yellow-accent: #facc15;
+  --yellow-hover: #eab308;
+  --text-light: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+  margin: 0;
+  height: 100vh;
+  display: flex;
+}
+
+.sidebar-panel {
+    width: 220px;               /* largura pedida */
+    background: #1e1e1e;        /* equivalente ao bg-dark-panel */
+    padding: 16px;              /* p-4 */
+    display: flex;              /* flex */
+    flex-direction: column;     /* flex-col */
+    box-shadow: 0 10px 15px rgba(0,0,0,0.4); /* shadow-lg */
+    
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  background-color: white; /* Keep canvas white */
+}
+#canvas:active {
+  cursor: grabbing;
+}
+.svg-item.active {
+  background-color: rgba(250, 204, 21, 0.2);
+  border-color: var(--yellow-accent);
+  font-weight: 600;
+}
+.svg-name {
+  user-select: none;
+  cursor: default;
+  padding: 2px 4px;
+  border-radius: 4px;
+  
+}
+
+.svg-name:hover {
+  background-color: #53612094;
+  color: white;
+}
+/* Improved canvas selection feedback */
+#canvasContainer {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  transition: all 0.2s ease;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+/* Barra de ferramentas fixa no topo à direita */
+#toolBar {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+
+  display: flex;
+  gap: 10px;
+
+  background: #1e1e1e;
+  padding: 4px 14px;
+  border-radius: 0px 0px 0px 28px ;
+
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(238, 255, 0, 0.795);
+}
+
+/* Botões */
+.toolBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+
+  background: #f5c400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.2s ease;
+}
+
+.toolBtn:hover {
+  background: #e0b300;
+}
+
+#selectionInfo {
+  transition: all 0.3s ease;
+  opacity: 0;
+  background-color: var(--dark-panel);
+  border: 1px solid var(--yellow-accent);
+}
+#selectionInfo.visible {
+  opacity: 1;
+}
+
+/* Yellow buttons */
+#addSvgBtn, #renderBtn, #imageBtn, #exportBtn, #importBtn,
+#zoomInBtn, #zoomOutBtn, #resetZoomBtn {
+  background-color: var(--yellow-accent);
+  color: #1e293b;
+  font-weight: 600;
+}
+
+#addSvgBtn:hover, #renderBtn:hover, #imageBtn:hover, #exportBtn:hover, 
+#importBtn:hover, #zoomInBtn:hover, #zoomOutBtn:hover, #resetZoomBtn:hover {
+  background-color: var(--yellow-hover);
+}
+
+
+
+
+#confirmNameBtn {
+  background-color: var(--yellow-accent);
+  color: #1e293b;
+}
+
+#confirmNameBtn:hover {
+  background-color: var(--yellow-hover);
+}
+
+#cancelNameBtn {
+  background-color: #334155;
+  color: var(--text-light);
+}
+
+#cancelNameBtn:hover {
+  background-color: #475569;
+}
+
+/* SVG list styling */
+#svgList {
+  color: var(--text-light);
+}
+
+.svg-item {
+  background-color: #000000;
+  border-color: #334155;
+}
+
+.svg-item:hover {
+  background-color: #f6fa104b;
+}
+
+.svg-name:hover {
+  background-color: #f6fa1000;
+}
+
+/* Text areas */
+#svgInput {
+  background-color: #000000;
+  color: var(--text-light);
+  border-color: #ff0015;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar-track {
+  background: #2c2c2c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #717720;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+/* Animation for modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Feather icons color */
+.feather {
+  color: var(--text-light);
+}
+
+button .feather {
+  color: inherit;
+}
+#nameModal {
+  animation: fadeIn 0.2s ease-out;
+}
