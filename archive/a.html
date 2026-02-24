@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grupo Tático Airsoft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', sans-serif; }
+
+    body {
+      background: linear-gradient(180deg, #000000 0%, #000000 70%, #800202 100%);
+      color: #e5e5e5;
+      overflow-x: hidden;
+    }
+
+    header {
+      background:linear-gradient(180deg, #000000 0%, #000000 60%, #800202 100%);
+      padding: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 2px solid #ffffff;
+    }
+
+    header h1 {
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: #ffffff;
+    }
+
+    .menu-btn { font-size: 24px; cursor: pointer; color: #ffffff; }
+
+    .sidebar {
+      position: fixed;
+      left: -260px;
+      top: 0;
+      width: 250px;
+      height: 100%;
+      background: linear-gradient(180deg, #000000 0%, #000000 70%, #800202 100%);
+      padding-top: 60px;
+      transition: 0.3s;
+      z-index: 999;
+      border-right: 2px solid #ffffff;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 15px 20px;
+      color: #dfdfdf;
+      text-decoration: none;
+      border-bottom: 1px solid #555353;
+      text-transform: uppercase;
+      font-size: 15px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar a:hover {
+      background: #242424;
+      color: #ff0000;
+    }
+
+    .sidebar.active { left: 0; 
+    }
+
+    main { padding-top: 70px; }
+    section { display: none; padding: 20px; }
+    section.active { display: block; }
+
+    h2 {
+      margin-bottom: 15px;
+      color: #ececec;
+      border-bottom: 1px solid #727272;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+      font-size: 15px;
+    }
+
+    ul { list-style: none; }
+
+    li {
+      margin-bottom: 10px;
+      padding: 12px;
+      background: #0d0d0d;
+      border: 1px solid #5f0505;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    li:hover {
+      background: #363636;
+      border-color: #ffffff;
+    }
+
+    /* HOME */
+    .hero {
+      width: 100%;
+      height: 285px;
+      border: #470202 solid 2px;
+      background: url('https://bizoonydb.github.io/new/archive/BANER.jpeg') center/cover no-repeat; /* IMAGEM PRINCIPAL*/
+      filter: contrast(120%);
+    }
+
+  .carousel {
+  margin: 20px;
+  height: 100px;
+  background: #0f0000;
+  border: 2px solid #470202;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Painel tecnológico */
+.carousel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* Linhas diagonais */
+    repeating-linear-gradient(
+      990deg,
+      rgba(255, 0, 0, 0.08) 0px,
+      rgba(255, 0, 0, 0.08) 2px,
+      transparent 1px,
+      transparent 20px
+    ),
+    /* Linhas horizontais */
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 0, 0, 0.08) 0px,
+      rgba(255, 0, 0, 0.08) 1px,
+      transparent 1px,
+      transparent 20px
+    );
+  pointer-events: none;
+}
+
+/* brilho interno leve */
+.carousel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,0,0,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.carousel-item {
+  position: absolute;
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.5s ease;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #2b9202;
+  text-align: center;
+  padding: 10px;
+}
+
+.carousel-item.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+    /* PERFIL */
+    .profile-card {
+      background: #181818;
+      border: 1px solid #cecccc;
+      border-radius: 45px 0 45px 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border: 2px solid #ff0000;
+    }
+
+    .profile-info { text-align: left; margin-top: 15px; font-size: 15px; }
+    .profile-info p { margin-bottom: 6px; }
+
+    .patch-title {
+      margin-top: 20px;
+      font-size: 15px;
+      color: #ff0000;
+      text-transform: uppercase;
+    }
+.sidebar a {
+  border-left: 2px solid transparent;
+}
+
+.sidebar a:hover {
+  border-left: 2px solid #ff0000;
+}
+    .patch-img {
+      width: 120px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      padding: 5px;
+      background: #000;
+    }
+
+    .rank-info {
+  display: none;
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 11px;
+  background: #111;
+  border: 1px solid #222;
+  color: #eeeeee;
+  text-transform: none;
+}
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 10px;
+      color: #ffffff;
+      border-top: 1px solid #ffffff;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        max-width: 480px;
+        margin: auto;
+        border-left: 1px solid #111;
+        border-right: 1px solid #111;
+      }
+    }
+
+    .home-title {
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 4px;
+  color: #bbbaba;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px rgba(255,0,0,0.7);
+}
+
+
+.calendar-container {
+  margin: 20px;
+  background: #0d0d0d;
+  border: 1px solid #6d0505;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #969494;
+  border: #7c0202 solid 2px;
+  font-size: 19px;
+  text-transform: uppercase;
+}
+
+.calendar-header button {
+  background: #383838;
+  color: #ff0000;
+  border: 1px solid #000000;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
+  background: #111;
+  border: 1px solid #222;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  border-color: #ff0000;
+}
+
+.calendar-day.event {
+  background: #220000;
+  border-color: #ff0000;
+  color: #ff4d4d;
+}
+
+.event-details {
+  margin-top: 15px;
+  padding: 10px;
+  font-size: 12px;
+  background: #111;
+  border: 1px solid #222;
+}
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="menu-btn" onclick="toggleMenu()">☰</span>
+  <h1>ELITE COMBAT</h1>
+</header>
+
+<div class="sidebar" id="sidebar">
+  <a onclick="showSection('home')">Início</a>
+  <a onclick="showSection('membros')">Membros</a>
+  <a onclick="showSection('regras airsoft')">Regras airsoft</a>
+  <a onclick="showSection('regras team')">Regras team</a>
+  <a onclick="showSection('hierarquia')">Hierarquia</a>
+</div>
+
+<main>
+
+<section id="home" class="active">
+  <div class="home-title">ELITE COMBAT</div>
+<div class="hero"></div>
+  <div class="carousel">
+    <div class="carousel-item active">⚠️EVENTO DIA 08/03/26⚠️</div>
+  <div class="carousel-item">DICIPLINA E HONRA</div>
+  <div class="carousel-item">SUPORTE (33)9 8423-4424</div>
+  <div class="carousel-item">HILANDER SERAÕ PUNIDOS</div>
+  <div class="carousel-item">⚠️EVENTO DIA 08/03/26⚠️</div>
+  <div class="carousel-item">NÃO ADIMITIMOS HILANDER</div>
+</div>
+
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button onclick="prevMonth()">◀</button>
+    <span id="monthYear"></span>
+    <button onclick="nextMonth()">▶</button>
+  </div>
+
+  <div class="calendar-grid" id="calendar"></div>
+
+  <div class="event-details" id="eventDetails">
+    Selecione uma data para ver os detalhes.
+  </div>
+</div>
+
+</section>
+
+<section id="membros">
+  <h2>combatentes</h2>
+  <div id="listaMembros"></div>
+</section>
+
+<section id="perfil">
+  <h2>Ficha do combatente</h2>
+  <div class="profile-card" id="profileContent"></div>
+</section>
+
+<section id="regras airsoft">
+  <h2>Regras do airsoft geral</h2>
+  <ul>
+     <li>Uso obrigatório de óculos.(e´obrigatorio utilizar oculos de proteçao em qualquer jogo ou tratica de airsoft)</li>
+    <li>Respeito total entre operadores e participantes.</li>
+    <li>Limite de FPS conforme regulamento (400 fps).</li>
+    <li>Proibido atirar em zona safe, mantenha a arma no safe para nao ocorrer o risco de disparo acidental .</li>
+    <li>proibido tiro de 90 graus  para baixo, ou para cima, por que o tiro pode atingir olhos e nariz do operador por vias e gretas do oculos .</li>
+    <li>sempre tenha a nota fiscal do seu armamento em maos, para fins de fiscalizaçao.</li>
+    <li>menores de idade pode participar somente com a autorizaçao e acompanhamento dos pais ou responsavel.</li>
+    <li>outro.</li>
+    
+    
+
+    
+  </ul>
+</section>
+<section id="regras team">
+  <h2>Regras</h2>
+  <ul>
+    <li>Uso obrigatório de óculos.</li>
+    <li>Respeito total entre operadores.</li>
+    <li>Limite de FPS conforme regulamento.</li>
+    <li>Proibido remover EPI em área quente.</li>
+  </ul>
+</section>
+
+<section id="hierarquia">
+  <h2>Hierarquia</h2>
+  <ul>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      MARECHAL
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      GENERAL
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      CORONEL
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      MAJOR
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      CAPITÃO
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      TENENTE
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      SUB TENENTE
+      <div class="rank-info"></div>
+    </li>
+    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+      SARGENTO
+      <div class="rank-info"></div>
+    </li>
+
+    <li onclick="toggleRankInfo(this, 'Coordena equipes e lidera missões específicas.')">
+      2º SARGENTO
+      <div class="rank-info"></div>
+    </li>
+
+    <li onclick="toggleRankInfo(this, 'Auxilia na liderança e organização em campo.')">
+      3º SARGENTO
+      <div class="rank-info"></div>
+    </li>
+
+    <li onclick="toggleRankInfo(this, 'Responsável pelo suporte e disciplina da equipe.')">
+      CABO
+      <div class="rank-info"></div>
+    </li>
+
+    <li onclick="toggleRankInfo(this, 'Operador ativo em missões e treinamentos.')">
+      RECRUTA
+      <div class="rank-info"></div>
+    </li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  © 2026 elite combat - Todos os direitos reservados.
+</footer>
+
+<script>
+
+const members = {
+  alpha: {
+    nome: "Capitão Alpha",
+    nascimento: "12/03/1990",
+    sangue: "O+",
+    funcao: "Líder de Equipe",
+    numero: "001",
+    patente: "Major",
+    nivel: 6,
+    foto: "https://randomuser.me/api/portraits/men/32.jpg",
+    patch: "INSIRA_AQUI_PATCH_CAPITAO"
+  },
+  bravo: {
+    nome: "Tenente Bravo",
+    nascimento: "25/07/1995",
+    sangue: "A+",
+    funcao: "Atirador Designado",
+    numero: "014",
+    patente: "Tenente",
+    nivel: 3,
+    foto: "https://randomuser.me/api/portraits/men/45.jpg",
+    patch: "INSIRA_AQUI_PATCH_TENENTE"
+  },
+   s: {
+    nome: "Teste",
+    nascimento: "25/07/1995",
+    sangue: "A+",
+    funcao: "Atirador Designado",
+    numero: "014",
+    patente: "Major",
+    nivel: 3,
+    foto: "https://randomuser.me/api/portraits/men/45.jpg",
+    patch: "INSIRA_AQUI_PATCH_TENENTE"
+  },
+  delta: {
+    nome: "Sargento Delta",
+    nascimento: "03/11/1992",
+    sangue: "B+",
+    funcao: "Suporte",
+    numero: "021",
+    patente: "Sargento",
+    nivel: 4,
+    foto: "https://randomuser.me/api/portraits/men/52.jpg",
+    patch: "INSIRA_AQUI_PATCH_SARGENTO"
+  },
+};
+function toggleMenu() {
+  document.getElementById('sidebar').classList.toggle('active');
+}
+
+
+
+function openProfile(id) {
+  const member = members[id];
+  const container = document.getElementById('profileContent');
+
+  container.innerHTML = `
+    <div style="display:flex; gap:15px; align-items:center;">
+      <img src="${member.foto}" class="profile-photo" style="margin:0;">
+      <div>
+        <h3 style="margin-bottom:5px;">${member.nome}</h3>
+        <p style="font-size:11px; color:#ff0000;">OP ${member.numero}</p>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; font-size:11px;">
+      <div><strong>Nascimento:</strong><br>${member.nascimento}</div>
+      <div><strong>Tipo Sanguíneo:</strong><br>${member.sangue}</div>
+      <div><strong>Função:</strong><br>${member.funcao}</div>
+      <div onclick="togglePatente()" style="cursor:pointer; border:1px solid #ff0000; padding:6px;">
+        <strong>Patente:</strong><br>${member.patente}
+      </div>
+    </div>
+
+    <div id="descPatente" style="display:none; margin-top:15px; font-size:11px; background:#111; padding:10px; border:1px solid #222;">
+      DESCRIÇÃO DA FUNÇÃO DA PATENTE AQUI
+    </div>
+
+    <div class="patch-title">Patch de Patente</div>
+    <img src="${member.patch}" class="patch-img">
+  `;
+
+  showSection('perfil', false);
+}
+
+function togglePatente() {
+  const el = document.getElementById('descPatente');
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+function toggleRankInfo(element, text) {
+  const infoBox = element.querySelector('.rank-info');
+
+  if (infoBox.style.display === "block") {
+    infoBox.style.display = "none";
+    infoBox.innerHTML = "";
+  } else {
+    // Fecha todas abertas
+    document.querySelectorAll('.rank-info').forEach(el => {
+      el.style.display = "none";
+      el.innerHTML = "";
+    });
+
+    infoBox.innerHTML = text;
+    infoBox.style.display = "block";
+  }
+}
+function renderMembers() {
+  const container = document.getElementById("listaMembros");
+  container.innerHTML = "";
+
+  const hierarchyOrder = ["Marechal","General","Coronel","Major","Capitão","Tenente","Sub Tenente","Sargento", "2o Sargento", "3o Sargento", "Cabo", "Recruta"];
+
+  hierarchyOrder.forEach(rank => {
+    const group = Object.entries(members)
+      .filter(([id, m]) => m.patente === rank)
+      .sort((a, b) => a[1].numero - b[1].numero);
+
+    if (group.length > 0) {
+      const title = document.createElement("h2");
+      title.innerText = rank;
+      title.style.marginTop = "20px";
+      title.style.fontSize = "13px";
+      title.style.color = "#ff0000";
+
+      container.appendChild(title);
+
+      const ul = document.createElement("ul");
+
+      group.forEach(([id, m]) => {
+        const li = document.createElement("li");
+        li.innerText = `${m.nome} - OP ${m.numero}`;
+        li.onclick = () => openProfile(id);
+        ul.appendChild(li);
+      });
+
+      container.appendChild(ul);
+    }
+  });
+}
+function showSection(id, closeMenu = true) {
+  document.querySelectorAll('main section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  
+  if(id === "membros"){
+    renderMembers();
+  }
+
+  // Só fecha o menu se ele estiver aberto
+  if(closeMenu && document.getElementById('sidebar').classList.contains('active')){
+    toggleMenu();
+  }
+}
+
+const slides = document.querySelectorAll('.carousel-item');
+let currentSlide = 0;
+
+function nextSlide() {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = (currentSlide + 1) % slides.length;
+  slides[currentSlide].classList.add('active');
+}
+
+// troca a cada 5 segundos
+setInterval(nextSlide, 5000);
+
+// ===== EVENTOS MARCADOS =====
+// Formato: "YYYY-MM-DD"
+const events = {
+  "2026-03-08": "OPERAÇÃO MATA DA ONÇA - Início 7:00 - IBATIBA-MG / EQUIPE ORGANIZADORA, S.A.T",
+  "2026-07-25": "TREINAMENTO TÁTICO - 08:00 - Base Principal",
+  "2026-08-03": "MISSÃO ESPECIAL - Local Confidencial"
+};
+
+let currentDate = new Date();
+
+function renderCalendar() {
+  const calendar = document.getElementById("calendar");
+  const monthYear = document.getElementById("monthYear");
+  calendar.innerHTML = "";
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  monthYear.innerText = `${year} - ${month + 1}`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    calendar.innerHTML += `<div></div>`;
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const hasEvent = events[dateStr];
+
+    const div = document.createElement("div");
+    div.classList.add("calendar-day");
+    if (hasEvent) div.classList.add("event");
+
+    div.innerText = day;
+
+    div.onclick = () => {
+      if (hasEvent) {
+        document.getElementById("eventDetails").innerText =
+          `📅 ${dateStr}\n${hasEvent}`;
+      } else {
+        document.getElementById("eventDetails").innerText =
+          "Nenhum evento nesta data.";
+      }
+    };
+
+    calendar.appendChild(div);
+  }
+}
+
+function prevMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+}
+
+renderCalendar();
+
+</script>
+
+</body>
+</html>
