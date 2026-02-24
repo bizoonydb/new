@@ -13,7 +13,20 @@
       color: #e5e5e5;
       overflow-x: hidden;
     }
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
 
+  /* Firefox */
+  scrollbar-width: none;
+}
+
+/* Chrome, Edge, Safari */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
     header {
       background:linear-gradient(180deg, #000000 0%, #000000 60%, #800202 100%);
       padding: 13px;
@@ -326,9 +339,10 @@
 <div class="sidebar" id="sidebar">
   <a onclick="showSection('home')">Início</a>
   <a onclick="showSection('membros')">Membros</a>
+  <a onclick="showSection('hierarquia')">Hierarquia</a>
   <a onclick="showSection('regras airsoft')">Regras airsoft</a>
   <a onclick="showSection('regras team')">Regras team</a>
-  <a onclick="showSection('hierarquia')">Hierarquia</a>
+  
 </div>
 
 <main>
@@ -340,9 +354,9 @@
     <div class="carousel-item active">⚠️EVENTO DIA 08/03/26⚠️</div>
   <div class="carousel-item">DICIPLINA E HONRA</div>
   <div class="carousel-item">SUPORTE (33)9 8423-4424</div>
-  <div class="carousel-item">HILANDER SERAÕ PUNIDOS</div>
+  <div class="carousel-item">MODALIDADE - MILSIM <br> SIMULAÇÃO MILITAR</div>
   <div class="carousel-item">⚠️EVENTO DIA 08/03/26⚠️</div>
-  <div class="carousel-item">NÃO ADIMITIMOS HILANDER</div>
+  <div class="carousel-item"> HILANDER SERÃO PUNIDOS</div>
 </div>
 
 <div class="calendar-container">
@@ -391,65 +405,70 @@
 <section id="regras team">
   <h2>Regras</h2>
   <ul>
-    <li>Uso obrigatório de óculos.</li>
-    <li>Respeito total entre operadores.</li>
-    <li>Limite de FPS conforme regulamento.</li>
-    <li>Proibido remover EPI em área quente.</li>
+    <li>(C.A - COMANDO ALTO) MARECHAL - GENERAL - CORONEL.</li>
+    <li>(OFICIAIS) TENENTE - CAPITÃO - MAJOR.</li>
+    <li>O C.A E OS OFICIAIS, FORMAM O QUE CHAMAMOS DE , COMISSÃO DE LIDARES.</li>
+    <li>AS REUNIÕES DA COMISSÃO DE LIDARES SÃO REALIZADAS UMA VEZ AO MES, PARA ANALIZAR E DISCUTIR SOBRE PROMOÇÕES E DESENVOLVIMENTO DAS EQUIPES E O TIME.</li>
+    <li>DESRESPEITO A HEIRARQUIA CABE AO SUPERIOR APLICAR PUNIÇÕES, TRAZENDO A AIVERTÊNCIA AO (C.A).</li>
+    <li>NÃO SERA TOLERADO NEM UM TIPO DE AGREÇÃO FISICA - SERA EXPULSO O REU  .</li>
+    <li>NÃO SERA TOLERADO NEM UMA PRATICA ANT-ESPORTIVA, HILANDER, MENTIROSOS, SERAO APLICADA ADVERTÊNCIA .</li>
+    <li>SOMOS UM TEAM QUE PRIORIZAMOS O ESTILO MILSIM (SIMULAÇAÕ MILITAR), ENTÃO EM CAMPO, RESPEITE SEUS SUPERIORES E TENHA UMILDADE E RESPEITO PELO ESPORTE.</li>
+   
   </ul>
 </section>
 
 <section id="hierarquia">
   <h2>Hierarquia</h2>
   <ul>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Lider geral do team -- faz parte do (C.A) comando alto')">
       MARECHAL
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Sub lider geral do team- responsavel por recrutamento -- faz parte do (C.A) comando alto.')">
       GENERAL
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Sub lider geral do team - faz parte do (C.A) comando alto  ')">
       CORONEL
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Autoridade maximano do team , porta vós do comando alto (c.a), ajuda na adminstraçao geral -- promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       MAJOR
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Lidera todo o esquadrao, e planeja a açaõ tatica de toda divisão , responçavel por cordernar a missão -- promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       CAPITÃO
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Resolve problemas e pequenos b.o em campo, se necessario chamar a C L, responsavel por manter a ordem e diciplina das divisões ( agrupamento de todos squads)--promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       TENENTE
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Preparação a ser tenente, auxilia diretamente ao tenete- mantem a organizaçao e disciplina em campo -- promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       SUB TENENTE
       <div class="rank-info"></div>
     </li>
-    <li onclick="toggleRankInfo(this, 'Responsável geral pelas operações e decisões estratégicas.')">
+    <li onclick="toggleRankInfo(this, 'Responsavel por avaliar a promoçaõ de operadores abaixo de sua patente e indicar ao C.L---Comanda grupo de operador ( alfa, delta, etc) é capás de liderar um squad ou grupo de operadores--promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       SARGENTO
       <div class="rank-info"></div>
     </li>
 
-    <li onclick="toggleRankInfo(this, 'Coordena equipes e lidera missões específicas.')">
+    <li onclick="toggleRankInfo(this, 'FASE PREPARATORIA PARA SARGENTO , AUXILIAR DIRETO DO SARGENTO--promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       2º SARGENTO
       <div class="rank-info"></div>
     </li>
 
-    <li onclick="toggleRankInfo(this, 'Auxilia na liderança e organização em campo.')">
+    <li onclick="toggleRankInfo(this, 'Auxilia na liderança e organização em campo, comanda pequeno grupo de operadores na ausência de um superior - promove somente com indicaçao do supérior e a avaliaçaõ da comissão de lidares C.L de acordo com a necesidade do team.')">
       3º SARGENTO
       <div class="rank-info"></div>
     </li>
 
-    <li onclick="toggleRankInfo(this, 'Responsável pelo suporte e disciplina da equipe.')">
+    <li onclick="toggleRankInfo(this, 'Operador experiente, responsavel por auxiliar novos recrutas  encinadno regras e condutas - promove a 3º sargento após 7 jogos oficiais e recomendaçao do superior .')">
       CABO
       <div class="rank-info"></div>
     </li>
 
-    <li onclick="toggleRankInfo(this, 'Operador ativo em missões e treinamentos.')">
+    <li onclick="toggleRankInfo(this, 'Em fase de treinamento, combatente padrao do time, executa missões designadas- deve obedecer ordens, aprender regras e disciplina gerais - promove a CABO somente após 3 jogos oficiais e recomendaçao do superior (sargento) .')">
       RECRUTA
       <div class="rank-info"></div>
     </li>
@@ -465,48 +484,59 @@
 <script>
 
 const members = {
-  alpha: {
-    nome: "Capitão Alpha",
-    nascimento: "12/03/1990",
-    sangue: "O+",
-    funcao: "Líder de Equipe",
+ 1: {
+    nome: "FABIO AGUIAR",
+    nascimento: "17/04/1999",
+    sangue: "--",
+    funcao: "Líder de Geral",
     numero: "001",
-    patente: "Major",
-    nivel: 6,
-    foto: "https://randomuser.me/api/portraits/men/32.jpg",
+    patente: "Marechal",
+    nivel: 99,
+    foto: "https://bizoonydb.github.io/new/archive/FABIO.jpeg",
     patch: "INSIRA_AQUI_PATCH_CAPITAO"
   },
-  bravo: {
-    nome: "Tenente Bravo",
-    nascimento: "25/07/1995",
-    sangue: "A+",
-    funcao: "Atirador Designado",
-    numero: "014",
-    patente: "Tenente",
-    nivel: 3,
-    foto: "https://randomuser.me/api/portraits/men/45.jpg",
+ 2: {
+    nome: "BIZOONY",
+    nascimento: "17/04/1999",
+    sangue: "--",
+    funcao: "SUB LIDER GREAL - RECRUTADOR",
+    numero: "02",
+    patente: "General",
+    nivel: 98,
+    foto: "https://bizoonydb.github.io/new/archive/BIZOONY.jpeg",
     patch: "INSIRA_AQUI_PATCH_TENENTE"
   },
-   s: {
-    nome: "Teste",
-    nascimento: "25/07/1995",
-    sangue: "A+",
-    funcao: "Atirador Designado",
-    numero: "014",
-    patente: "Major",
+  3: {
+    nome: "FABRICIO",
+    nascimento: "17/04/1999",
+    sangue: "--",
+    funcao: "SUB LIDER GERAL",
+    numero: "03",
+    patente: "Coronel",
     nivel: 3,
-    foto: "https://randomuser.me/api/portraits/men/45.jpg",
+    foto: "https://bizoonydb.github.io/new/archive/FABRICIO.jpeg",
     patch: "INSIRA_AQUI_PATCH_TENENTE"
   },
-  delta: {
-    nome: "Sargento Delta",
-    nascimento: "03/11/1992",
-    sangue: "B+",
-    funcao: "Suporte",
-    numero: "021",
-    patente: "Sargento",
+ 5: {
+    nome: "IAN AMARAL",
+    nascimento: "00/00/0000",
+    sangue: "--",
+    funcao: "RUSHER",
+    numero: "05",
+    patente: "Recruta",
     nivel: 4,
-    foto: "https://randomuser.me/api/portraits/men/52.jpg",
+    foto: "https://img.freepik.com/vetores-premium/perfil-patriotico-soldados-visagem-soldados-crista-vignetta-de-valor_706143-46483.jpg",
+    patch: "INSIRA_AQUI_PATCH_SARGENTO"
+  },
+  4: {
+    nome: "IURI AMARAL",
+    nascimento: "00/00/0000",
+    sangue: "--",
+    funcao: "RUSHER",
+    numero: "04",
+    patente: "Recruta",
+    nivel: 4,
+    foto: "https://img.freepik.com/vetores-premium/perfil-patriotico-soldados-visagem-soldados-crista-vignetta-de-valor_706143-46483.jpg",
     patch: "INSIRA_AQUI_PATCH_SARGENTO"
   },
 };
@@ -521,7 +551,7 @@ function openProfile(id) {
   const container = document.getElementById('profileContent');
 
   container.innerHTML = `
-    <div style="display:flex; gap:15px; align-items:center;">
+    <div style="display:flex; gap:15px; align-items:center;  font-size:25px;">
       <img src="${member.foto}" class="profile-photo" style="margin:0;">
       <div>
         <h3 style="margin-bottom:5px;">${member.nome}</h3>
@@ -529,12 +559,12 @@ function openProfile(id) {
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; font-size:11px;">
-      <div><strong>Nascimento:</strong><br>${member.nascimento}</div>
-      <div><strong>Tipo Sanguíneo:</strong><br>${member.sangue}</div>
-      <div><strong>Função:</strong><br>${member.funcao}</div>
-      <div onclick="togglePatente()" style="cursor:pointer; border:1px solid #ff0000; padding:6px;">
-        <strong>Patente:</strong><br>${member.patente}
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; font-size:13px;">
+      <div><strong style="color:#ff0000;">Nascimento:</strong><br>${member.nascimento}</div>
+      <div><strong style="color:#ff0000;>Tipo Sanguíneo:</strong><br>${member.sangue}</div>
+      <div><strong style="color:#ff0000;>Função:</strong><br>${member.funcao}</div>
+      <div onclick="togglePatente()" style="cursor:pointer; border:1px solid #ff0000; padding:2px; font-size:15px; color:#aaa; text-align:center;">
+        <strong >Patente  :</strong>    ${member.patente}
       </div>
     </div>
 
@@ -634,8 +664,8 @@ setInterval(nextSlide, 5000);
 // Formato: "YYYY-MM-DD"
 const events = {
   "2026-03-08": "OPERAÇÃO MATA DA ONÇA - Início 7:00 - IBATIBA-MG / EQUIPE ORGANIZADORA, S.A.T",
-  "2026-07-25": "TREINAMENTO TÁTICO - 08:00 - Base Principal",
-  "2026-08-03": "MISSÃO ESPECIAL - Local Confidencial"
+  "2026-03-29": "ASSALTO A BANCO - 14:00 - (CAMPO COPA REAL) REALEZA-MG / EQUIPE ORGANIZADORA, ELITE COMBAT",
+ 
 };
 
 let currentDate = new Date();
