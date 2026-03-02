@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Visualizador PCB A01</title>
+    <title>Visualizador PCB db</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div id="app">
       <header style="display: none">
-        <h1>Visualizador PCB A01</h1>
+        <h1>Visualizador PCB db</h1>
         <div style="display: flex; align-items: center;">
           <div id="stats">Cargando...</div>
         </div>
@@ -81,7 +81,7 @@
 
       <div id="watermark" style="
         position: fixed;
-        top: 50%;
+        top: 10%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 100%;
@@ -94,38 +94,22 @@
         z-index: 9999;
         user-select: none;
       ">
-        💛DIGITAL BOARD💛
+        DIGITAL BOARD
       </div>
       <div id="canvas-holder"></div>
       
-      <!-- Debug Panel -->
-      <div id="debug-panel" style="
-        position: fixed; 
-        top: 80px; 
-        right: 20px; 
-        width: 300px; 
-        background: rgba(20, 24, 32, 0.95); 
-        color: #eee; 
-        padding: 15px; 
-        border: 1px solid #444; 
-        border-radius: 8px; 
-        font-family: monospace; 
-        display: none; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        z-index: 1000;
-        overflow-y: auto;
-        max-height: 80vh;
-      ">
-        <h3 style="margin-top:0; border-bottom:1px solid #555; padding-bottom:5px; display:flex; justify-content:space-between; align-items: center;">
-          <span>DEBUG INFO</span>
-          <div>
-            <button id="btn-copy-debug" onclick="copyDebugInfo()" style="background:#333; color:#ccc; border:1px solid #555; padding:2px 8px; margin-right:5px; cursor:pointer; font-size:11px; border-radius:4px;">Copy</button>
-            <button onclick="document.getElementById('debug-panel').style.display='none'" style="background:none; border:none; color:#999; cursor:pointer; font-size:14px;">x</button>
-          </div>
-        </h3>
-        <div id="debug-content" style="white-space: pre-wrap; font-size: 12px;"></div>
-      </div>
-
+<div id="watermark" style="
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  user-select: none;
+  opacity: 0.30; /* Transparência tipo marca d’água */
+">
+  <img src="https://bizoonydb.github.io/PDFJS/db/logontransparente.png" style="width: 60vw; max-width: 700px;">
+</div>
       <div class="footer">
         Archivo: pcbtesta01.json
       </div>
