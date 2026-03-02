@@ -192,7 +192,7 @@ function draw() {
     }
   }
 
-  background(40) // Dark background
+  background(30) // Dark background
 
   const { transform, scaleFactor } = getTransform()
   
@@ -977,8 +977,8 @@ function parsePinRef(token) {
 
 function drawLayer_BoardLines(scaleFactor) {
 
-  stroke(200, 200, 200)
-fill(25, 25, 25)
+  stroke(200, 150, 0)
+fill(15, 15, 15)
 
   let currentWeight = 1 / scaleFactor
   strokeWeight(currentWeight)
