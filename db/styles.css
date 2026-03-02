@@ -1,0 +1,97 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #202020;
+  color: white;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
+
+/* --- Floating Menu Styles (imported from ui.html) --- */
+:root {
+  --bg: #ffffff;
+  --panel: #f7f9fa;
+  --border: #e3e6e9;
+  --text: #222;
+  --muted: #6b7280;
+  --accent: #007aff;
+  --radius: 8px;
+  --gap: 10px;
+  /* font-size: 14px;  -- Avoid overriding global font size if not needed */
+}
+
+/* MINIMAL TOOLBAR & ICON BUTTONS */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  color: #333; /* Ensure icon color is dark on white bg */
+}
+.icon-btn:hover { background: #f6f6f6; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+.icon-btn.active { background: #eaf4ff; border-color: #9ec6fb; }
+.icon-btn svg { width: 18px; height: 18px; stroke: #333; fill: none; stroke-width: 1.8; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+#floating-controls {
+  position: fixed;
+  top: 5px; /* Below header */
+  left: 300px;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  padding: 8px;
+  color: #333;
+}
+
+#floating-controls .icon-btn { width: 26px; height: 26px; border-radius: 6px; padding: 0; }
+#floating-controls .icon-btn svg { width: 14px; height: 14px; stroke-width: 1.6; }
+
+#floating-controls #net-select-wrap input,
+#floating-controls #comp-search-wrap input { 
+  min-width: 80px; 
+  width: 120px; 
+  padding: 4px 6px; 
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: #333;
+  background: #fff;
+}
+
+#net-select-wrap, #comp-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  #floating-controls { 
+    top: auto; 
+    bottom: 20px; 
+    width: 90%; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+  }
+}
