@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #202020;
+  background-color: #000000;
   color: white;
   font-family: sans-serif;
   overflow: hidden;
@@ -37,32 +37,32 @@ canvas {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  background: #fff;
+  background: #ffc400da;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-  color: #333; /* Ensure icon color is dark on white bg */
+  color: #ffbb00; /* Ensure icon color is dark on white bg */
 }
-.icon-btn:hover { background: #f6f6f6; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
-.icon-btn.active { background: #eaf4ff; border-color: #9ec6fb; }
+.icon-btn:hover { background: #ffeb39; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+.icon-btn.active { background: #ffeb39; border-color: #9ec6fb; }
 .icon-btn svg { width: 18px; height: 18px; stroke: #333; fill: none; stroke-width: 1.8; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
 #floating-controls {
   position: fixed;
-  top: 5px; /* Below header */
-  left: 300px;
+  top: 0px; /* Below header */
+  left: 200px;
   transform: translateX(-50%);
   z-index: 10000;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  background: #000000;
+  border: 1px solid #f7bd01;
+  border-radius: 0px 0px 28px 0px;
+  box-shadow: 0 5px 8px #f7bd01;
   padding: 8px;
-  color: #333;
+  color: #f7bd01;
 }
 
 #floating-controls .icon-btn { width: 26px; height: 26px; border-radius: 6px; padding: 0; }
