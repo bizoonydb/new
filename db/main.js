@@ -5,7 +5,7 @@
 
 // --- Global State ---
 let pcbData = null
-
+let meterMode = "voltage"
 let startOffsetX = 0
 let startOffsetY = 0
 
@@ -48,6 +48,7 @@ let panVX = 0
 let panVY = 0
 let selectedPin = null
 let selectedNet = null
+let isTouchMode = false
 let currentNetPins = []
 let currentNetPinIndex = -1
 let boardFilters = { circles: false, markerCircles: true, arcs: true, semiArcs: false, semiAsOutlines: false, rects: true, labels: true }
@@ -93,8 +94,8 @@ function preload() {
      // Default Fallback
      //pcbData = loadJSON('../redmi-note-15pro+.json')
      //pcbData = loadJSON('../moto-g30.json')
-     pcbData = loadJSON('iphone17promax.db')
-     window.loadedFileName = 'iphone17promax.db'
+     pcbData = loadJSON('BoardViewer.db')
+     window.loadedFileName = 'BoardViewer.db'
   }
 }
 
@@ -223,17 +224,17 @@ function draw() {
   // 5. Draw Component Centers
   //drawLayer_ComponentCenters(scaleFactor)
   
+  pop()
+
   // 6. Draw Component Labels
   if (boardFilters.labels && !isDragging && !isAnimating) {
-    drawLayer_ComponentLabels(scaleFactor)
+    drawLayer_ComponentLabels()
   }
   
   // 7. Draw Pin Labels (High Zoom Only)
   if (!isDragging && !isAnimating) {
-      drawLayer_PinLabels(scaleFactor)
+      drawLayer_PinLabels()
   }
-
-  pop()
   
   updateZoomIndicator()
 }
@@ -443,7 +444,26 @@ function processData() {
 
   // 4. Process Signals (Traces)
   const signalObj = pcbData.signal || {}
-  Object.entries(signalObj).forEach(([netId, entry]) => {
+  Object.entries(signalObj).forEach(([rawNetId, entry]) => {
+    let netId = rawNetId
+
+    // Resolve Net Alias (if available)
+    // Priority: p= (Pad/Pin Name?), t= (Trace Name?)
+    // User example: "$$$144": "2794031|t=TX_TR_OUT0_GSM_MB|p=TX_OUT_GSM_MB" -> TX_OUT_GSM_MB
+    if (pcbData.alias && pcbData.alias.net && pcbData.alias.net[rawNetId]) {
+      const aliasVal = pcbData.alias.net[rawNetId]
+      const parts = aliasVal.split('|')
+      let pVal = null
+      let tVal = null
+      for (const part of parts) {
+        const trimmed = part.trim()
+        if (trimmed.startsWith('p=')) pVal = trimmed.substring(2)
+        if (trimmed.startsWith('t=')) tVal = trimmed.substring(2)
+      }
+      if (pVal) netId = pVal
+      else if (tVal) netId = tVal
+    }
+
     const tokens = String(entry).split(';')
     const polyline = []
     const netPins = []
@@ -459,7 +479,11 @@ function processData() {
     })
     
     if (netPins.length > 0) {
-      renderData.netList[netId] = netPins
+      if (!renderData.netList[netId]) {
+        renderData.netList[netId] = []
+      }
+      // Merge pins into the net list (avoid duplicates if multiple segments map to same net)
+      renderData.netList[netId].push(...netPins)
     }
     
     if (polyline.length >= 2) {
@@ -475,6 +499,7 @@ function processData() {
         }
       })
       polyline.bounds = { minX, minY, maxX, maxY }
+      polyline.netId = netId // Assign Net ID to Polyline
       renderData.signals.push(polyline)
     }
   })
@@ -1087,6 +1112,7 @@ fill(15, 15, 15)
   })
 }
 
+
 function drawLayer_Signals(scaleFactor) {
   if (renderData.signals.length === 0) return
   const vb = getVisibleBounds()
@@ -1159,6 +1185,8 @@ function drawLayer_ComponentOutlines(scaleFactor) {
     pop()
   })
 }
+
+
 function drawLayer_VirtualOutlines(scaleFactor) {
 
   const vb = getVisibleBounds()
@@ -1254,12 +1282,79 @@ function drawLayer_Pins(scaleFactor) {
     
     // Check Net Colors
     if (pin.netId) {
-      if (pin.netId === 'GND') {
-        fill(150, 150, 150) // Dark Gray
-      } else if (pin.netId === 'NC') {
-        fill(120, 180, 255) // Light Gray
-      }
-    }
+
+  const net = pin.netId.toUpperCase()
+
+  // ===== POWER SUPPLY =====
+  if (net.includes('BUCK') || net.includes('STEP')) {
+    fill(235, 150, 160) // Step-down (rosado)
+
+  } else if (net.includes('VBAT') || net.includes('BATT')) {
+    fill(170, 0, 0) // Battery (rojo oscuro)
+
+  } else if (net.startsWith('VPH')) {
+    fill(255, 0, 0) // VPH_PWR (rojo vivo)
+
+  } else if (net.includes('VREG') || net.includes('BOB')) {
+    fill(200, 0, 0) // VREG_BOB (rojo profundo)
+
+  } else if (net.startsWith('VDD')) {
+    fill(220, 0, 0) // VDD general
+
+  } else if (net.includes('CHG') || net.includes('CHARG')) {
+    fill(210, 40, 40) // Charging line
+
+  // ===== GROUND =====
+  } else if (net === 'GND' || net.includes('GROUND')) {
+    fill(90, 90, 90)
+
+  // ===== NO CONNECTION =====
+  } else if (net === 'NC' || net.includes('NO_CONNECT')) {
+    fill(110, 150, 220, 50)
+
+  // ===== DEDICATED POWER =====
+  } else if (net.includes('DISP')) {
+    fill(200, 120, 220) // Display power
+
+  } else if (net.includes('QLINK')) {
+    fill(140, 90, 200) // QLINK RF
+
+  } else if (net.includes('APT') || net.includes('ET')) {
+    fill(170, 0, 210) // ET_APT
+
+  } else if (net.includes('GPS')) {
+    fill(255, 140, 0) // GPS
+
+  } else if (net.includes('TH') || net.includes('TEMP')) {
+    fill(255, 100, 0) // Temperature
+
+  // ===== BUS =====
+  } else if (net.includes('MIPI') ||
+             net.includes('CSI') ||
+             net.includes('RFFE')) {
+    fill(120, 220, 120)
+
+  } else if (net.includes('I2C') ||
+             net.includes('SPI') ||
+             net.includes('SPMI')) {
+    fill(0, 170, 90)
+
+  } else if (net.includes('PCIE') ||
+             net.includes('I2S')) {
+    fill(70, 140, 40)
+
+  // ===== CONTROL =====
+  } else if (net.includes('INT') ||
+             net.includes('RST') ||
+             net.includes('IRQ') ||
+             net.includes('EN') ||
+             net.includes('CTRL')) {
+    fill(120, 220, 220)
+
+  } else {
+    //fill(150, 150, 150) // Default
+  }
+}
 
     let rot = (pin.absRotation || 0) % 360
     if (rot < 0) rot += 360
@@ -1365,7 +1460,7 @@ function drawLayer_ComponentCenters(scaleFactor) {
     circle(pt.x, pt.y, dotSize)
   })
 }
-function drawLayer_ComponentLabels(scaleFactor) {
+function drawLayer_ComponentLabels() {
 
   const vb = getVisibleBounds()
 
@@ -1383,16 +1478,15 @@ function drawLayer_ComponentLabels(scaleFactor) {
   // ============================
 
   const SCREEN_TEXT_SIZE = 11
-  const ts = SCREEN_TEXT_SIZE / scaleFactor
   
-  textSize(ts)
+  textSize(SCREEN_TEXT_SIZE)
   textFont('monospace')
   textAlign(CENTER, CENTER)
   noStroke()
   fill(255)
 
   const occupied = []
-  const PADDING = 2 / scaleFactor 
+  const PADDING = 2 // Screen Pixels
 
 
   // ============================
@@ -1421,23 +1515,26 @@ function drawLayer_ComponentLabels(scaleFactor) {
     const label = comp.id
     
     // 2️⃣ Determinar posição (preferir virtual outline)
-    let posX = comp.x
-    let posY = comp.y
+    let worldX = comp.x
+    let worldY = comp.y
     
     const v = virtualMap[comp.id]
     if (v) {
        const r = rotatePoint(v.center.x, v.center.y, v.rotation)
-       posX = v.base_x + r.x
-       posY = v.base_y + r.y
+       worldX = v.base_x + r.x
+       worldY = v.base_y + r.y
     }
+    
+    // Convert to Screen Coords
+    const { x: sx, y: sy } = worldToScreen(worldX, worldY)
 
     const w = textWidth(label)
-    const h = ts
+    const h = SCREEN_TEXT_SIZE
     
-    const minX = posX - w/2 - PADDING
-    const maxX = posX + w/2 + PADDING
-    const minY = posY - h/2 - PADDING
-    const maxY = posY + h/2 + PADDING
+    const minX = sx - w/2 - PADDING
+    const maxX = sx + w/2 + PADDING
+    const minY = sy - h/2 - PADDING
+    const maxY = sy + h/2 + PADDING
     
     // 3️⃣ Checagem de colisão
     let collision = false
@@ -1451,39 +1548,28 @@ function drawLayer_ComponentLabels(scaleFactor) {
     
     // 4️⃣ Desenhar se não houver colisão
     if (!collision) {
-
-      if (FLIP_VERTICAL) {
-         push()
-         translate(posX, posY)
-         scale(1, -1)
-         text(label, 0, 0)
-         pop()
-      } else {
-         text(label, posX, posY)
-      }
-
-      occupied.push({ minX, maxX, minY, maxY })
+       text(label, sx, sy)
+       occupied.push({ minX, maxX, minY, maxY })
     }
 
   })
 }
 
-function drawLayer_PinLabels(scaleFactor) {
+function drawLayer_PinLabels() {
   // Only show if zoomed in
   if (view.scale <= 12.0) return
 
   const vb = getVisibleBounds()
   
   // Use smaller text for pins
-  const SCREEN_TEXT_SIZE = 10
-  const ts = SCREEN_TEXT_SIZE / scaleFactor
+  const SCREEN_TEXT_SIZE = 16
   
-  textSize(ts)
-   textFont('monospace')
-   textAlign(CENTER, CENTER) // Center vertically and horizontally
-   noStroke()
-   
-   renderData.pins.forEach(pin => {
+  textSize(SCREEN_TEXT_SIZE)
+  textFont('monospace')
+  textAlign(CENTER, CENTER) // Center vertically and horizontally
+  noStroke()
+  
+  renderData.pins.forEach(pin => {
      // 1. Culling
      const cx = pin.center ? pin.center[0] : pin.x
      const cy = pin.center ? pin.center[1] : pin.y
@@ -1494,42 +1580,34 @@ function drawLayer_PinLabels(scaleFactor) {
      const pinId = parts.length > 1 ? parts[1] : pin.pin
      const signal = pin.netId || "NC"
      
-     // 3. Draw Centered
-     if (FLIP_VERTICAL) {
-         push()
-         translate(cx, cy)
-         scale(1, -1)
-         
-         // Top line (Pin ID) slightly above center
-         // Bottom line (Signal) slightly below center
-         // Total height approx 2 * ts
-         // We center the block around (0,0)
-         
-         fill(50, 50, 50, 255) // Dark Text for contrast on pads (usually Gold/Silver)
-         // Or white with stroke? Let's try simple dark text first as pads are light.
-         // Actually pads are: fill(255, 200, 110, 200) (Gold)
-         // Dark text is better.
-         
-         text(pinId, 0, -ts * 0.6)
-         
-         // Signal
-         fill(80, 80, 80, 200) 
-         text(signal, 0, ts * 0.6)
-         
-         pop()
-     } else {
-         // Standard
-         fill(50, 50, 50, 255)
-         text(pinId, cx, cy - ts * 0.6)
-         
-         fill(80, 80, 80, 200)
-         text(signal, cx, cy + ts * 0.6)
-     }
+     // 3. Draw Centered (Screen Space)
+     const { x: sx, y: sy } = worldToScreen(cx, cy)
+     
+     fill(50, 50, 50, 255)
+     text(pinId, sx, sy - SCREEN_TEXT_SIZE * 0.6)
+     
+     fill(80, 80, 80, 200) 
+     text(signal, sx, sy + SCREEN_TEXT_SIZE * 0.6)
    })
  }
 
 
 // --- Utilities ---
+
+function worldToScreen(x, y) {
+  const { transform } = getTransform()
+  const s = transform.s
+  const tx = transform.tx
+  const ty = transform.ty
+  
+  const sx = (x - bounds.minX) * s + tx
+  // FLIP_VERTICAL is true by default in this app
+  const sy = FLIP_VERTICAL 
+     ? ty + s * (bounds.maxY - y)
+     : (y - bounds.minY) * s + ty
+     
+  return { x: sx, y: sy }
+}
 
 function getTransform() {
   const margin = VIEW_MARGIN
@@ -1686,6 +1764,114 @@ function mouseWheel(event) {
   return false
 }
 
+// --- Touch Interaction ---
+
+let pinchStart = {
+  dist: 0,
+  cx: 0,
+  cy: 0,
+  scale: 1,
+  offsetX: 0,
+  offsetY: 0
+}
+
+function touchStarted() {
+  isTouchMode = true
+  if (selectedPin) updateMultimeter(selectedPin)
+  // Check if touch is within canvas
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+    if (touches.length === 1) {
+      isDragging = true
+      hasDragged = false
+      dragStartX = touches[0].x
+      dragStartY = touches[0].y
+      startOffsetX = view.offsetX
+      startOffsetY = view.offsetY
+    } else if (touches.length === 2) {
+      isDragging = true
+      hasDragged = true
+      
+      const dx = touches[0].x - touches[1].x
+      const dy = touches[0].y - touches[1].y
+      const dist = Math.hypot(dx, dy)
+      const cx = (touches[0].x + touches[1].x) / 2
+      const cy = (touches[0].y + touches[1].y) / 2
+      
+      pinchStart = {
+        dist: dist,
+        cx: cx,
+        cy: cy,
+        scale: view.scale,
+        offsetX: view.offsetX,
+        offsetY: view.offsetY
+      }
+    }
+    // Prevent default to stop scrolling
+    return false
+  }
+}
+
+function touchMoved() {
+  if (touches.length === 1) {
+    if (!isDragging) return false
+    
+    const currentX = touches[0].x
+    const currentY = touches[0].y
+    
+    const total = Math.hypot(currentX - dragStartX, currentY - dragStartY)
+    if (total > DRAG_THRESHOLD) {
+      hasDragged = true
+    }
+    
+    if (hasDragged) {
+      const dx = currentX - dragStartX
+      const dy = currentY - dragStartY
+      
+      view.offsetX = startOffsetX + dx
+      view.offsetY = startOffsetY + dy
+      
+      targetView.offsetX = view.offsetX
+      targetView.offsetY = view.offsetY
+      
+      redraw()
+    }
+  } else if (touches.length === 2) {
+    const dx = touches[0].x - touches[1].x
+    const dy = touches[0].y - touches[1].y
+    const dist = Math.hypot(dx, dy)
+    const cx = (touches[0].x + touches[1].x) / 2
+    const cy = (touches[0].y + touches[1].y) / 2
+    
+    if (pinchStart.dist > 10) {
+      const scaleFactor = dist / pinchStart.dist
+      const nextScale = constrain(pinchStart.scale * scaleFactor, 0.1, 50)
+      
+      const ratio = nextScale / pinchStart.scale
+      
+      view.scale = nextScale
+      view.offsetX = cx - (pinchStart.cx - pinchStart.offsetX) * ratio
+      view.offsetY = cy - (pinchStart.cy - pinchStart.offsetY) * ratio
+      
+      targetView.scale = view.scale
+      targetView.offsetX = view.offsetX
+      targetView.offsetY = view.offsetY
+      
+      updateZoomIndicator()
+      redraw()
+    }
+  }
+  return false
+}
+
+function touchEnded() {
+  isDragging = false
+  if (touches.length === 0 && !hasDragged) {
+    // Tap detected
+    selectPinUnderCursor()
+  }
+  return false
+}
+
 function getBaseScale() {
    const margin = VIEW_MARGIN
    const w = width - margin * 2
@@ -1743,7 +1929,13 @@ function selectPinUnderCursor() {
     }
     
     updateDebugPanel(best)
-    redraw()
+    updateMultimeter(best)
+
+if(best.netId){
+    updateVoltageDisplay(best.netId)
+}
+
+redraw()
   } else {
     selectedPin = null
     selectedNet = null
@@ -1751,8 +1943,139 @@ function selectPinUnderCursor() {
     currentNetPinIndex = -1
     const panel = document.getElementById('debug-panel')
     if (panel) panel.style.display = 'none'
+    updateMultimeter(null)
     redraw()
   }
+}
+
+function updateMultimeter(pin) {
+
+  const diodeEl = document.getElementById('multimeter-diode')
+  const voltageEl = document.getElementById('multimeter-voltage')
+
+  if (!diodeEl && !voltageEl) return
+
+  // Verificar si hay datos de pines disponibles en el archivo cargado
+  let hasPinData = false
+  if (pcbData) {
+    if (pcbData.alias && pcbData.alias.pins && Object.keys(pcbData.alias.pins).length > 0) hasPinData = true
+    else if (pcbData.alias && pcbData.alias.pin && Object.keys(pcbData.alias.pin).length > 0) hasPinData = true
+    else if (pcbData.pin && Object.keys(pcbData.pin).length > 0) hasPinData = true
+  }
+
+  if (!hasPinData) {
+    if (diodeEl) diodeEl.textContent = 'OFF'
+    if (voltageEl) voltageEl.textContent = 'OFF'
+    return
+  }
+
+  if (!pin) {
+    if (diodeEl) diodeEl.textContent = 'OFF'
+    if (voltageEl) voltageEl.textContent = '0.00V'
+    return
+  }
+
+  // Buscar datos del pin
+  const findPinData = (pinId) => {
+    if (pcbData && pcbData.alias && pcbData.alias.pins && pcbData.alias.pins[pinId]) return pcbData.alias.pins[pinId]
+    if (pcbData && pcbData.alias && pcbData.alias.pin && pcbData.alias.pin[pinId]) return pcbData.alias.pin[pinId]
+    if (pcbData && pcbData.pin && pcbData.pin[pinId]) return pcbData.pin[pinId]
+    return null
+  }
+
+  let pinData = findPinData(pin.pin)
+
+  // Verificar r=
+  let currentHasR = false
+  if (pinData) {
+    currentHasR = pinData.split('|').some(p => p.trim().startsWith('r='))
+  }
+
+  // Buscar en otros pines del mismo net
+  if (!currentHasR && pin.netId && renderData.netList[pin.netId]) {
+    const netPins = renderData.netList[pin.netId]
+
+    for (const otherPin of netPins) {
+
+      if (otherPin === pin) continue
+
+      const otherData = findPinData(otherPin.pin)
+
+      if (otherData) {
+
+        const hasR = otherData.split('|').some(p => p.trim().startsWith('r='))
+
+        if (hasR) {
+          pinData = otherData
+          break
+        }
+
+      }
+
+    }
+  }
+
+  if (!pinData) {
+
+    if (diodeEl) diodeEl.textContent = 'N/A'
+    if (voltageEl) voltageEl.textContent = '0.00V'
+
+    return
+  }
+
+  // Parse r=
+  let rValue = null
+
+  const parts = pinData.split('|')
+
+  for (const part of parts) {
+
+    if (part.trim().startsWith('r=')) {
+
+      rValue = part.trim().substring(2)
+      break
+
+    }
+
+  }
+
+  if (rValue) {
+
+    let displayValue = rValue
+
+    if (rValue.toUpperCase() === 'OL') {
+
+      displayValue = 'OL'
+
+    } else {
+
+      const num = parseFloat(rValue)
+
+      if (!isNaN(num)) {
+
+        displayValue = (num / 1000).toFixed(3)
+
+      }
+
+    }
+
+    // Mostrar valor dependiendo del modo
+    if (window.meterMode === "voltage") {
+
+      if (voltageEl) voltageEl.textContent = displayValue + "V"
+
+    } else {
+
+      if (diodeEl) diodeEl.textContent = displayValue
+
+    }
+
+  } else {
+
+    if (diodeEl) diodeEl.textContent = 'OL'
+
+  }
+
 }
 
 function updateDebugPanel(pin) {
@@ -1770,16 +2093,40 @@ function updateDebugPanel(pin) {
   const wpx = (isCircleVisual ? d : size[0] * padScale) * transform.s
   const hpx = (isCircleVisual ? d : size[1] * padScale) * transform.s
   const effRot = (comp.rot || 0) + (pin.rotation || 0)
+
+  // Resolve Component Info (IC Alias)
+  let compInfo = `Component: ${comp.id || 'N/A'}`
+  if (pin.component && pin.component.id) {
+     const compId = pin.component.id
+     
+     // Check for alias in pcbData.alias.ic
+     if (pcbData && pcbData.alias && pcbData.alias.ic && pcbData.alias.ic[compId]) {
+        const aliasVal = pcbData.alias.ic[compId]
+        // Parse "2794005|p=PM7350C_002|t=Power Supply"
+        const parts = aliasVal.split('|')
+        let pVal = null
+        let tVal = null
+        for (const part of parts) {
+            const trimmed = part.trim()
+            if (trimmed.startsWith('p=')) pVal = trimmed.substring(2)
+            if (trimmed.startsWith('t=')) tVal = trimmed.substring(2)
+        }
+        
+        let infoStr = `Component: ${compId}`
+        if (pVal) infoStr += `\nPart: ${pVal}`
+        if (tVal) infoStr += `\nDesc: ${tVal}`
+        compInfo = infoStr
+     }
+  }
+
   const lines = [
     `Pin: ${pin.pin}`,
+    `Net: ${pin.netId || 'N/A'}`,
     `Shape: ${pin.shape}`,
     `Size: [${size[0]}, ${size[1]}]`,
     
-    
-    
     `VisualSize(px): [${wpx.toFixed(2)}, ${hpx.toFixed(2)}]`,
-    `Component: [${comp.x}, ${comp.y}]`,
-    
+    compInfo,
   ]
   content.textContent = lines.join('\n')
   panel.style.display = 'block'
@@ -2103,6 +2450,7 @@ function focusOnPoint(x, y, zoomLevel) {
 function selectNet(netId) {
   if (!renderData.netList[netId]) return
   
+  window.selectedNetId = netId // Store selected Net ID
   selectedNet = renderData.netList[netId]
   currentNetPins = selectedNet
   currentNetPinIndex = -1
@@ -2121,7 +2469,91 @@ function selectNet(netId) {
       const cx = (minX + maxX) / 2
       const cy = (minY + maxY) / 2
       focusOnPoint(cx, cy, 3.0)
-  }
-  
-  redraw()
+ }
+
+updateVoltageDisplay(netId)
+
+redraw()
+}
+const sidebar = document.getElementById('sidebar-multimeters');
+
+if (sidebar) {
+  [
+    'mousedown','mouseup','mousemove','wheel',
+    'click','dblclick',
+    'touchstart','touchend','touchmove'
+  ].forEach(evt => {
+    sidebar.addEventListener(evt, function(e){
+      e.stopPropagation();
+    }, { passive:false });
+  });
+}
+
+
+
+function getVoltageFromNetName(netName){
+
+if(!netName) return null
+
+netName = netName.toUpperCase()
+
+// VOLTAGENS FIXAS
+const fixedVoltages = {
+  "VPH_PWR": 3.8,
+  "VPHPWR": 3.8,
+  "VBAT": 3.7,
+  "VBUS_OVP": 5.0,
+  "VBUS": 5.0,
+}
+
+for(const key in fixedVoltages){
+
+ if(netName === key){
+  return fixedVoltages[key]
+}
+
+}
+
+// padrão 3P45 ou 3P0
+let match = netName.match(/(\d+)P(\d+)/)
+
+if(match){
+return parseFloat(match[1] + "." + match[2])
+}
+
+// padrão 1V22 ou 01V22
+match = netName.match(/(\d+)V(\d+)/)
+
+if(match){
+return parseFloat(match[1] + "." + match[2])
+}
+
+// padrão 1.22 ou 3.0
+match = netName.match(/(\d+\.\d+)/)
+
+if(match){
+return parseFloat(match[1])
+}
+
+return null
+}
+
+function updateVoltageDisplay(netName){
+
+const voltage = getVoltageFromNetName(netName)
+
+const display = document.getElementById("multimeter-voltage")
+
+if(!display) return
+
+if(voltage !== null){
+
+display.innerText = voltage.toFixed(3) + "mV"
+
+}else{
+
+display.innerText = "----V"
+
+}
+
 }
