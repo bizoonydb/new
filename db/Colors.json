@@ -1,0 +1,25 @@
+[
+  { "name": "Step-down power supply", "rgb": [235, 150, 160] },
+  { "name": "Battery voltage (VBAT/BATT)", "rgb": [170, 0, 0] },
+  { "name": "VPH_PWR", "rgb": [255, 0, 0] },
+  { "name": "VREG_BOB", "rgb": [200, 0, 0] },
+  { "name": "VDD (general)", "rgb": [220, 0, 0] },
+  { "name": "Charging line", "rgb": [210, 40, 40] },
+
+  { "name": "Ground (GND)", "rgb": [90, 90, 90] },
+  { "name": "No Connection (NC)", "rgb": [110, 150, 220] },
+
+  { "name": "Display dedicated power", "rgb": [200, 120, 220] },
+  { "name": "QLINK for RF Transmission", "rgb": [140, 90, 200] },
+  { "name": "ET_APT Power Amplifier", "rgb": [170, 0, 210] },
+  { "name": "GPS line", "rgb": [255, 140, 0] },
+  { "name": "Temperature detection (TH)", "rgb": [255, 200, 0] },
+
+  { "name": "Transmission bus (MIPI/CSI/RFFE)", "rgb": [120, 220, 120] },
+  { "name": "Configuration bus (I2C/SPI/SPMI)", "rgb": [0, 170, 90] },
+  { "name": "Special-purpose bus (PCIE/I2S)", "rgb": [70, 140, 40] },
+
+  { "name": "Control line (INT/RST/IRQ/EN/CTRL)", "rgb": [120, 220, 220] },
+
+  { "name": "Default / Unknown", "rgb": [150, 150, 150] }
+]

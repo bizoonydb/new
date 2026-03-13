@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>HandSchematic .db</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header style="display: none">
+        <h1>HandSchematic Tools</h1>
+        <div style="display: flex; align-items: center;">
+          <div id="stats">Cargando...</div>
+        </div>
+        <div id="layer-controls" style="margin-top:8px; display:flex; gap:12px; align-items:center;">
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-circles">
+            Círculos
+          </label>
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-marker-circles">
+            Marcadores (círculos pequeños)
+          </label>
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-arcs" checked>
+            Arcos
+          </label>
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-semi-arcs">
+            Semicírculos
+          </label>
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-semi-as-outlines">
+            Semicírculos como outlines
+          </label>
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-rects" checked>
+            Rectángulos
+          </label>
+          <label style="display:flex; gap:6px; align-items:center; font-size:12px;">
+            <input type="checkbox" id="toggle-labels" checked>
+            Etiquetas
+          </label>
+        </div>
+      </header>
+
+      <!-- Floating Controls -->
+      <div id="floating-controls">
+        <div id="zoom-level" style="font-family: monospace; font-size: 14px; color: #333; min-width: 60px; text-align: center;">Zoom: 1.0x</div>
+        <button id="zoom-out" type="button" class="icon-btn" title="Reducir zoom" aria-label="Reducir zoom">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+        </button>
+        <button id="zoom-in" type="button" class="icon-btn" title="Aumentar zoom" aria-label="Aumentar zoom">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button id="fit-view" type="button" class="icon-btn" title="Ajustar vista" aria-label="Ajustar vista">
+          <svg viewBox="0 0 24 24"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg>
+        </button>
+        
+        <div style="width:1px; height:20px; background:#ddd; margin:0 4px;"></div>
+
+        <button id="btn-open-file" type="button" class="icon-btn" title="Abrir archivo" aria-label="Abrir archivo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+        <input type="file" id="file-input" accept=".db,.json" style="display: none;" />
+
+        <div style="width:1px; height:20px; background:#ddd; margin:0 4px;"></div>
+
+        <div id="comp-search-wrap">
+          <input id="comp-search" type="text" list="components-list" placeholder="Componente..." />
+          <datalist id="components-list"></datalist>
+        </div>
+
+        <div style="width:1px; height:20px; background:#ddd; margin:0 4px;"></div>
+
+        <div id="net-select-wrap">
+          <input id="net-search" type="text" list="nets-list" placeholder="Red/Signal..." />
+          <datalist id="nets-list"></datalist>
+          <button id="btn-next-pin" type="button" class="icon-btn" title="Siguiente pin" aria-label="Siguiente pin">
+            <svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7"/></svg>
+          </button>
+          <button id="btn-clear-net" type="button" class="icon-btn" title="Limpiar" aria-label="Limpiar">
+             <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="watermark" style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+        font-family: sans-serif;
+        font-size: 5vw;
+        font-weight: bold;
+        color: rgba(255, 255, 255, 0.05);
+        pointer-events: none;
+        z-index: 9999;
+        user-select: none;
+      ">
+        HandSchematic Tools
+      </div>
+      <div id="canvas-holder"></div>
+      
+      <!-- Debug Panel -->
+      <div id="debug-panel" style="
+        position: fixed; 
+        top: 80px; 
+        right: 20px; 
+        width: 300px; 
+        background: rgba(20, 24, 32, 0.95); 
+        color: #eee; 
+        padding: 15px; 
+        border: 1px solid #444; 
+        border-radius: 8px; 
+        font-family: monospace; 
+        display: none; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        z-index: 1000;
+        overflow-y: auto;
+        max-height: 80vh;
+      ">
+        <h3 style="margin-top:0; border-bottom:1px solid #555; padding-bottom:5px; display:flex; justify-content:space-between; align-items: center;">
+          <span>DEBUG INFO</span>
+          <div>
+            <button id="btn-copy-debug" onclick="copyDebugInfo()" style="background:#333; color:#ccc; border:1px solid #555; padding:2px 8px; margin-right:5px; cursor:pointer; font-size:11px; border-radius:4px;">Copy</button>
+            <button onclick="document.getElementById('debug-panel').style.display='none'" style="background:none; border:none; color:#999; cursor:pointer; font-size:14px;">x</button>
+          </div>
+        </h3>
+        <div id="debug-content" style="white-space: pre-wrap; font-size: 12px;"></div>
+      </div>
+
+      <div class="footer">
+        HandSchematic Tools Digital Board Viewer V1.00
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+    <script src="open.js"></script>
+    <script>
+      // Prevent interactions on floating UI elements and debug panel from reaching the canvas
+      ['debug-panel', 'floating-controls'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          ['mousedown', 'mouseup', 'mousemove', 'wheel', 'click', 'dblclick', 'touchstart', 'touchend', 'touchmove', 'keydown', 'keyup', 'keypress'].forEach(evtName => {
+            el.addEventListener(evtName, (e) => {
+              e.stopPropagation();
+            }, { passive: false });
+          });
+        }
+      });
+
+      function copyDebugInfo() {
+        const content = document.getElementById('debug-content').innerText;
+        navigator.clipboard.writeText(content).then(() => {
+          const btn = document.getElementById('btn-copy-debug');
+          if(btn) {
+             const original = btn.innerText;
+             btn.innerText = 'Copied!';
+             btn.style.color = '#4f4';
+             setTimeout(() => {
+                btn.innerText = original;
+                btn.style.color = '#ccc';
+             }, 1500);
+          }
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+        });
+      }
+    </script>
+  </body>
+</html>
