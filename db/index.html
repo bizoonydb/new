@@ -7,6 +7,72 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+<!-- SIDEBAR MULTIMETRO -->
+<div id="sidebar-multimeters" style="
+    position: fixed;
+    top: 43px;
+    left: 0px;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 99999;
+    padding: 8px;
+    border-radius: 0 0 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    pointer-events:auto;
+user-select:none;
+    box-shadow: 0 0 10px #ffbb00;
+    border-right: 2px solid #ffbb00;
+    border-bottom: 2px solid #ffbb00;
+">
+
+<button id="toggle-meter" style="
+background:#ffbb00;
+color:white;
+border:none;
+padding:4px;
+cursor:pointer;
+font-size:12px;
+border-radius:4px;
+">MODE: VOLTAGE</button>
+
+<!-- MULTIMETRO DIODO -->
+<div id="meter-diode" style="display:none;">
+    <div style="position: relative;">
+        <img src="dioda.png" style="max-width:150px; display:block;">
+        <div id="multimeter-diode" style="
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            font-family:monospace;
+            font-size:22px;
+            color:#222;
+            font-weight:bold;
+        ">OL</div>
+    </div>
+</div>
+
+<!-- MULTIMETRO VOLTAGEM -->
+<div id="meter-voltage">
+    <div style="position: relative;">
+        <img src="vol.png" style="max-width:150px; display:block;">
+        <div id="multimeter-voltage" style="
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            font-family:monospace;
+            font-size:22px;
+            color:#222;
+            font-weight:bold;
+        ">0.00V</div>
+    </div>
+</div>
+
+</div>
+
+    
     <div id="app">
       <header style="display: none">
         <h1>Visualizador PCB db</h1>
@@ -79,7 +145,7 @@
         </div>
       </div>
 
-      <div id="watermark" style="
+         <div id="watermark" style="
         position: fixed;
         top: 10%;
         left: 50%;
@@ -118,10 +184,10 @@
     <script src="main.js"></script>
     <script>
       // Prevent interactions on floating UI elements and debug panel from reaching the canvas
-      ['debug-panel', 'floating-controls'].forEach(id => {
+      ['debug-panel', 'floating-controls', 'sidebar-multimeters'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-          ['mousedown', 'mouseup', 'mousemove', 'wheel', 'click', 'dblclick', 'touchstart', 'touchend', 'touchmove', 'keydown', 'keyup', 'keypress'].forEach(evtName => {
+          ['mousedown', 'mouseup', 'mousemove', 'wheel', 'touchstart', 'touchend', 'touchmove'].forEach(evtName => {
             el.addEventListener(evtName, (e) => {
               e.stopPropagation();
             }, { passive: false });
@@ -146,6 +212,44 @@
           console.error('Failed to copy:', err);
         });
       }
+
+    
+
+window.meterMode = "voltage";
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("toggle-meter");
+  const meterDiode = document.getElementById("meter-diode");
+  const meterVoltage = document.getElementById("meter-voltage");
+
+  btn.addEventListener("click", function(e){
+    e.stopPropagation();
+
+    if(window.meterMode === "diode"){
+
+      window.meterMode = "voltage";
+
+      meterDiode.style.display = "none";
+      meterVoltage.style.display = "block";
+
+      btn.innerText = "MODE: VOLTAGE";
+
+    } else {
+
+      window.meterMode = "diode";
+
+      meterDiode.style.display = "block";
+      meterVoltage.style.display = "none";
+
+      btn.innerText = "MODE: DIODA";
+
+    }
+
+    console.log("Modo atual:", window.meterMode);
+  });
+
+});
     </script>
   </body>
 </html>
