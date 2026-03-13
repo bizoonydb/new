@@ -18,12 +18,19 @@ canvas {
   --border: #e3e6e9;
   --text: #222;
   --muted: #6b7280;
-  --accent: #007aff;
+  --accent: #ffee00;
   --radius: 8px;
   --gap: 10px;
   /* font-size: 14px;  -- Avoid overriding global font size if not needed */
 }
+#sidebar-multimeters{
+pointer-events:none;
+}
 
+#sidebar-multimeters button{
+pointer-events:auto;
+cursor:pointer;
+}
 /* MINIMAL TOOLBAR & ICON BUTTONS */
 .toolbar {
   display: flex;
@@ -37,14 +44,14 @@ canvas {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  background: #ffc400da;
+  background: #ffbb00;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   color: #ffbb00; /* Ensure icon color is dark on white bg */
 }
-.icon-btn:hover { background: #ffeb39; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
-.icon-btn.active { background: #ffeb39; border-color: #9ec6fb; }
+.icon-btn:hover { background: #ffee00; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+.icon-btn.active { background: #eeff00; border-color: #2d7ce2; }
 .icon-btn svg { width: 18px; height: 18px; stroke: #333; fill: none; stroke-width: 1.8; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
@@ -58,11 +65,11 @@ canvas {
   align-items: center;
   gap: 8px;
   background: #000000;
-  border: 1px solid #f7bd01;
+  border: 1px solid #ffbb00;
   border-radius: 0px 0px 28px 0px;
-  box-shadow: 0 5px 8px #f7bd01;
+  box-shadow: 0 5px 8px #ffbb00;
   padding: 8px;
-  color: #f7bd01;
+  color: #ffbb00;
 }
 
 #floating-controls .icon-btn { width: 26px; height: 26px; border-radius: 6px; padding: 0; }
