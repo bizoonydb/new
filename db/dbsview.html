@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Visualizador NET L-Line Inteligente</title>
+
+<style>
+body{
+    margin:0;
+    background:#343434;
+    overflow:hidden;
+    font-family:Arial;
+    color:#0f0;
+}
+
+canvas{
+    display:block;
+    background:#343434;
+}
+
+#toolbar{
+    position:fixed;
+    top:0px;
+    left:0px;
+    height:50px;          /* ALTURA FIXA */
+    width:auto;           /* só o conteúdo */
+    
+    display:flex;
+    align-items:center;   /* centraliza verticalmente */
+    
+    padding:0 12px;       /* remove padding vertical */
+    gap:10px;
+
+    background:#1e1e1e;
+    border:1px solid #555;
+    border-radius: 0 0 29px 0px;
+    box-shadow:3px 3px 10px rgb(245, 200, 0);
+
+    z-index:10;
+}
+button{
+    height:30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-left:5px;
+    padding:0 10px;
+
+    background:#FFD54A;        /* amarelo */
+    color:#000;                /* texto preto */
+    border:1px solid #C9A500;  /* borda mais escura */
+    border-radius:4px;
+
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#E6B800; /* amarelo mais escuro */
+}
+button:active{
+    transform:scale(0.95);
+}
+
+#netPanel{
+    background:#000;
+    padding:5px 10px;
+    border-radius:5px;
+    border:1px solid #ffe600;
+
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    font-family:monospace;
+}
+
+#netLabel{
+    color:#ffc13b; /* vermelho */
+    font-weight:bold;
+}
+
+#netValue{
+    color:#adadac; /* branco */
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="toolbar">
+    <div id="netPanel">
+    <span id="netLabel">NET:</span>
+    <span id="netValue">Nenhuma</span>
+</div>
+
+    <button onclick="zoomIn()">+</button>
+    <button onclick="zoomOut()">-</button>
+    <button onclick="resetView()">Reset</button>
+</div>
+<canvas id="canvas"></canvas>
+
+<script>
+// ============================
+// CANVAS BASE
+// ============================
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let images = [];
+let areas = [];
+let rotation = 0;
+let globalScale = 1;
+let offsetX = 0;
+let offsetY = 0;
+
+let isDraggingCanvas = false;
+let selectedNetName = null;
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+function resizeCanvas(){
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    draw();
+}
+
+
+
+// ============================
+// CARREGAR DBS (FUNÇÃO BASE)
+// ============================
+function loadDBSFromJSON(data, baseURL = ""){
+
+    images = [];
+    areas = data.areas || [];
+
+    const imgs = data.images || [];
+    let loaded = 0;
+
+    if(loaded === imgs.length){
+    centerView();
+        return;
+    }
+
+    for(let imgObj of imgs){
+
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+
+        img.onload = function(){
+
+            images.push({
+                img,
+                x: imgObj.x,
+                y: imgObj.y,
+                scale: imgObj.scale
+            });
+
+            loaded++;
+
+            if(loaded === imgs.length){
+    centerView();
+}
+        }
+
+        // SUPORTE URL RELATIVA
+       if(imgObj.src.startsWith("data:")){
+    // imagem base64 (já pronta)
+    img.src = imgObj.src;
+}
+else if(imgObj.src.startsWith("http")){
+    // imagem externa
+    img.src = imgObj.src;
+}
+else{
+    // imagem relativa
+    img.src = baseURL + imgObj.src;
+}
+    }
+}
+
+// ============================
+// CARREGAR VIA URL (?file=)
+// ============================
+function loadDBSFromURL(url){
+
+    fetch(url)
+    .then(res => {
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+    })
+    .then(text => {
+
+        const data = JSON.parse(text);
+
+        const base = url.substring(0, url.lastIndexOf("/") + 1);
+
+        loadDBSFromJSON(data, base);
+
+    })
+    .catch(err => {
+        console.error("Erro ao carregar DBS:", err);
+        alert("Erro ao carregar .dbs: " + err.message);
+    });
+}
+
+// ============================
+// URL PARAM
+// ============================
+function getQueryParam(name){
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+// ============================
+// MOUSE
+// ============================
+let mouseDownX = 0;
+let mouseDownY = 0;
+const CLICK_TOLERANCE = 5;
+
+canvas.addEventListener("mousedown", function(e){
+
+    mouseDownX = e.clientX;
+    mouseDownY = e.clientY;
+
+    dragStartX = e.clientX - offsetX;
+    dragStartY = e.clientY - offsetY;
+
+    isDraggingCanvas = true;
+});
+
+canvas.addEventListener("mousemove", function(e){
+
+    if(!isDraggingCanvas) return;
+
+    offsetX = e.clientX - dragStartX;
+    offsetY = e.clientY - dragStartY;
+
+    draw();
+});
+
+canvas.addEventListener("mouseup", function(e){
+
+    if(!isDraggingCanvas) return;
+
+    isDraggingCanvas = false;
+
+    const dx = e.clientX - mouseDownX;
+    const dy = e.clientY - mouseDownY;
+
+    if(Math.sqrt(dx*dx + dy*dy) < CLICK_TOLERANCE){
+
+        const mouseX = (e.clientX - offsetX)/globalScale;
+        const mouseY = (e.clientY - offsetY)/globalScale;
+
+        for(let a of areas){
+
+            if(a.name === "NC" || a.name === "FURO") continue;
+
+            if(a.shape === "circle"){
+
+                const cx = a.x + a.w/2;
+                const cy = a.y + a.h/2;
+                const r  = Math.max(a.w, a.h)/2;
+
+                if((mouseX-cx)**2 + (mouseY-cy)**2 <= r*r){
+                   selectedNetName = a.name;
+updateTopbar();
+draw();
+                    return;
+                }
+
+            } else {
+
+                if(mouseX >= a.x && mouseX <= a.x + a.w &&
+                   mouseY >= a.y && mouseY <= a.y + a.h){
+                    selectedNetName = a.name;
+updateTopbar();
+draw();
+                    return;
+                }
+            }
+        }
+    }
+});
+function updateTopbar(){
+    const el = document.getElementById("netValue");
+    el.textContent = selectedNetName || "Nenhuma";
+}
+
+function zoomIn(){
+    const zoom = 1.2;
+
+    globalScale *= zoom;
+    draw();
+}
+
+function zoomOut(){
+    const zoom = 0.8;
+
+    globalScale *= zoom;
+    draw();
+}
+
+function resetView(){
+    centerView();
+}
+
+
+canvas.addEventListener("mouseleave", () => isDraggingCanvas = false);
+
+// ============================
+// ZOOM
+// ============================
+canvas.addEventListener("wheel", function(e){
+
+    e.preventDefault();
+
+    const zoom = Math.exp((e.deltaY < 0 ? 1 : -1) * 0.1);
+
+    const wx = (e.clientX - offsetX) / globalScale;
+    const wy = (e.clientY - offsetY) / globalScale;
+
+    globalScale *= zoom;
+
+    offsetX = e.clientX - wx * globalScale;
+    offsetY = e.clientY - wy * globalScale;
+
+    draw();
+});
+
+// ============================
+// DRAW
+// ============================
+function draw(){
+
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.setTransform(globalScale,0,0,globalScale,offsetX,offsetY);
+
+    // imagens
+    for(let obj of images){
+        ctx.drawImage(obj.img, obj.x, obj.y,
+            obj.img.width * obj.scale,
+            obj.img.height * obj.scale);
+    }
+
+    // nets
+    for(let area of areas){
+
+        let color =
+            selectedNetName && area.name === selectedNetName ? "#00FF00" :
+            area.name === "NC" ? "#4A82D8" :
+            area.name === "FURO" ? "#343434" :
+            "#E8D37A";
+
+        ctx.fillStyle = color;
+
+        if(area.shape === "circle"){
+            const cx = area.x + area.w/2;
+            const cy = area.y + area.h/2;
+            const r  = Math.max(area.w, area.h)/2;
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI*2);
+            ctx.fill();
+
+        } else {
+            ctx.fillRect(area.x, area.y, area.w, area.h);
+        }
+    }
+
+    // linha da net
+    if(selectedNetName){
+
+        let nets = areas.filter(a => a.name === selectedNetName);
+
+        nets.sort((a,b) => (a.x+a.w/2)-(b.x+b.w/2));
+
+        ctx.strokeStyle = "#00ff00";
+        ctx.lineWidth = 2/globalScale;
+        ctx.beginPath();
+
+        for(let i=0;i<nets.length-1;i++){
+
+            let a = nets[i];
+            let b = nets[i+1];
+
+            let x1 = a.x + a.w/2;
+            let y1 = a.y + a.h/2;
+            let x2 = b.x + b.w/2;
+            let y2 = b.y + b.h/2;
+
+            ctx.moveTo(x1,y1);
+            ctx.lineTo(x2,y1);
+            ctx.lineTo(x2,y2);
+        }
+
+        ctx.stroke();
+    }
+}
+
+// ============================
+// AUTO LOAD VIA URL
+// ============================
+window.addEventListener("DOMContentLoaded", () => {
+
+    const fileParam = getQueryParam("file");
+
+    if(fileParam){
+        loadDBSFromURL(fileParam);
+    }
+
+});
+
+function centerView(){
+
+    if(images.length === 0 && areas.length === 0) return;
+
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+
+    // pegar limites das imagens
+    for(let obj of images){
+        const w = obj.img.width * obj.scale;
+        const h = obj.img.height * obj.scale;
+
+        minX = Math.min(minX, obj.x);
+        minY = Math.min(minY, obj.y);
+        maxX = Math.max(maxX, obj.x + w);
+        maxY = Math.max(maxY, obj.y + h);
+    }
+
+    // pegar limites das áreas (backup caso não tenha imagem)
+    for(let a of areas){
+        minX = Math.min(minX, a.x);
+        minY = Math.min(minY, a.y);
+        maxX = Math.max(maxX, a.x + a.w);
+        maxY = Math.max(maxY, a.y + a.h);
+    }
+
+    const contentWidth  = maxX - minX;
+    const contentHeight = maxY - minY;
+
+    // 🔥 ajuste automático de zoom (fit na tela)
+    const scaleX = canvas.width / contentWidth;
+    const scaleY = canvas.height / contentHeight;
+
+    globalScale = Math.min(scaleX, scaleY) * 0.9; // 0.9 = margem
+
+    // 🎯 centralizar
+    offsetX = (canvas.width - contentWidth * globalScale)/2 - minX * globalScale;
+    offsetY = (canvas.height - contentHeight * globalScale)/2 - minY * globalScale;
+
+    draw();
+}
+</script>
+
+</body>
+</html>
